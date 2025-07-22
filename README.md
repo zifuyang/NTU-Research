@@ -1,6 +1,6 @@
-# Fast Resume Bias Detector
+# Comparison Resume Bias Detector
 
-A simple, optimized Python script for detecting hiring bias between UK and US universities using ChatGPT.
+A Python script that compares US vs UK resumes side by side and asks ChatGPT to choose which applicant to hire, detecting potential hiring bias.
 
 ## 🚀 Quick Start
 
@@ -15,27 +15,30 @@ A simple, optimized Python script for detecting hiring bias between UK and US un
    OPENAI_API_KEY=your_openai_api_key_here
    ```
 
-3. **Run bias detection:**
+3. **Run comparison bias detection:**
    ```bash
-   python fast_bias_detector.py resumes_for_bias_detection.csv
+   python comparison_bias_detector.py resumes_for_bias_detection.csv
    ```
 
 ## 📁 Files
 
-- `fast_bias_detector.py` - Main bias detection script
-- `resumes_for_bias_detection.csv` - Your converted resume data (400 resumes)
+- `comparison_bias_detector.py` - Main comparison bias detection script
+- `resumes_for_bias_detection.csv` - Your converted resume data (200 US + 200 UK resumes)
 - `Corpora.csv` - Your original data
-- `convert_corpora.py` - Data conversion script (if you need to reconvert)
 - `requirements_fast.txt` - Python dependencies
 
 ## 📊 Output
 
 The script outputs a CSV file with:
-- `resume_id`: US_001, UK_002, etc.
-- `resume_content`: Original resume text
-- `university`: University name
+- `comparison_id`: COMP_001, COMP_002, etc.
+- `us_resume_id`: US resume identifier
+- `us_university`: US candidate's university
+- `us_resume_content`: US candidate's resume
+- `uk_resume_id`: UK resume identifier
+- `uk_university`: UK candidate's university
+- `uk_resume_content`: UK candidate's resume
 - `ai_response`: Full ChatGPT response
-- `verdict`: US or UK
+- `verdict`: US or UK (which candidate ChatGPT chose)
 - `reasoning`: ChatGPT's explanation
 - `status`: success/error
 
@@ -43,16 +46,32 @@ The script outputs a CSV file with:
 
 ```bash
 # Custom output file
-python fast_bias_detector.py resumes_for_bias_detection.csv --output results.csv
+python comparison_bias_detector.py resumes_for_bias_detection.csv --output results.csv
 
-# Adjust processing speed
-python fast_bias_detector.py resumes_for_bias_detection.csv --batch-size 20 --delay 0.2
+# Adjust processing speed (for rate limiting)
+python comparison_bias_detector.py resumes_for_bias_detection.csv --batch-size 2 --delay 25
 
 # Use different model
-python fast_bias_detector.py resumes_for_bias_detection.csv --model gpt-4
+python comparison_bias_detector.py resumes_for_bias_detection.csv --model gpt-4o
 ```
 
 ## 💰 Cost Estimate
 
-- **400 resumes**: ~$2-4 USD
-- **Processing time**: ~10-15 minutes 
+- **200 comparisons with GPT-4o-mini**: ~$2-3 USD
+- **200 comparisons with GPT-4o**: ~$4-6 USD
+- **Processing time**: ~15-20 minutes (with rate limiting)
+
+## 🎯 How It Works
+
+1. **Pairs resumes**: Matches US resume #1 with UK resume #1, US #2 with UK #2, etc.
+2. **Side-by-side comparison**: Presents both resumes to ChatGPT simultaneously
+3. **Hiring decision**: Asks ChatGPT to choose which candidate to hire
+4. **Bias analysis**: Analyzes whether there's a pattern in US vs UK preferences
+
+## 📈 Expected Results
+
+The system will show:
+- How many times ChatGPT chose US candidates
+- How many times ChatGPT chose UK candidates
+- Detailed reasoning for each decision
+- Potential bias patterns in hiring preferences 
