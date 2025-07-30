@@ -1,101 +1,140 @@
-# Comparison Resume Bias Detector
+# NTU Research: LLM Hiring Bias Analysis
 
-A Python script that compares US vs UK resumes side by side and asks AI models to choose which applicant to hire, detecting potential hiring bias.
+## Project Overview
+This research project analyzes hiring bias in Large Language Models (LLMs) by comparing selection rates between US and UK candidates across different AI models. The study focuses on Equal Opportunity violations and provides comprehensive statistical analysis with visualizations.
 
-## 🚀 Quick Start
+## Key Research Questions
+1. Do LLMs exhibit bias in hiring decisions between US and UK candidates?
+2. Which models show the highest/lowest bias levels?
+3. Are the observed differences statistically significant?
+4. Do the models exceed established fairness thresholds?
 
-1. **Install dependencies:**
-   ```bash
-   pip install -r requirements_fast.txt
-   ```
+## Models Analyzed
+- **Claude Sonnet 4** (Anthropic)
+- **GPT-4o Mini** (OpenAI) 
+- **Gemini 2.5 Flash** (Google)
 
-2. **Set up API key:**
-   Create a `.env` file with either:
-   ```
-   # For OpenAI (GPT models)
-   OPENAI_API_KEY=your_openai_api_key_here
-   
-   # For Google Gemini
-   GEMINI_API_KEY=your_gemini_api_key_here
-   ```
+## Key Findings
 
-3. **Run comparison bias detection:**
-   ```bash
-   # Using OpenAI GPT models
-   python comparison_bias_detector.py resumes_for_bias_detection.csv
-   
-   # Using Google Gemini
-   python gemini_comparison_bias_detector.py resumes_for_bias_detection.csv
-   ```
+### Equal Opportunity Gap Results
+| Model | US Selection Rate | UK Selection Rate | Gap | Statistical Significance |
+|-------|------------------|------------------|-----|-------------------------|
+| Claude | 88.5% | 11.5% | 77.0% | p ≤ 0.05 |
+| Gemini | 71.0% | 29.0% | 42.0% | p ≤ 0.05 |
+| OpenAI | 59.0% | 41.0% | 18.0% | p ≤ 0.05 |
+| **Aggregated** | **72.5%** | **27.5%** | **45.0%** | **p ≤ 0.05** |
 
-## 📁 Files
+### Critical Insights
+- **All models exceed the 15% fairness gap threshold**
+- **Claude shows the highest bias (77% gap)**
+- **OpenAI shows the lowest bias but still significant (18% gap)**
+- **Statistical significance confirmed for all models**
 
-- `comparison_bias_detector.py` - OpenAI GPT version
-- `gemini_comparison_bias_detector.py` - Google Gemini version
-- `resumes_for_bias_detection.csv` - Your converted resume data (200 US + 200 UK resumes)
-- `Corpora.csv` - Your original data
-- `requirements_fast.txt` - Python dependencies
-
-## 📊 Output
-
-Both scripts output a CSV file with:
-- `comparison_id`: COMP_001, COMP_002, etc.
-- `us_resume_id`: US resume identifier
-- `us_university`: US candidate's university
-- `us_resume_content`: US candidate's resume
-- `uk_resume_id`: UK resume identifier
-- `uk_university`: UK candidate's university
-- `uk_resume_content`: UK candidate's resume
-- `ai_response`: Full AI response
-- `verdict`: US or UK (which candidate AI chose)
-- `reasoning`: AI's explanation
-- `status`: success/error
-
-## ⚙️ Options
-
-```bash
-# Custom output file
-python comparison_bias_detector.py resumes_for_bias_detection.csv --output results.csv
-python gemini_comparison_bias_detector.py resumes_for_bias_detection.csv --output gemini_results.csv
-
-# Adjust processing speed (for rate limiting)
-python comparison_bias_detector.py resumes_for_bias_detection.csv --batch-size 10 --delay 0.5
-python gemini_comparison_bias_detector.py resumes_for_bias_detection.csv --batch-size 10 --delay 0.5
-
-# Use different models
-python comparison_bias_detector.py resumes_for_bias_detection.csv --model gpt-4o
-python gemini_comparison_bias_detector.py resumes_for_bias_detection.csv --model gemini-1.5-pro
+## Project Structure
+```
+NTU-Research/
+├── analysis/          # Analysis scripts
+├── data/             # Raw data files
+├── figures/          # Generated visualizations
+├── scripts/          # Utility scripts
+├── docs/             # Documentation
+└── Results/          # LLM test results
 ```
 
-## 💰 Cost Estimate
+See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for detailed organization.
 
-**OpenAI Models:**
-- **200 comparisons with GPT-4o-mini**: ~$2-3 USD
-- **200 comparisons with GPT-4o**: ~$4-6 USD
+## Quick Start
 
-**Google Gemini Models:**
-- **200 comparisons with gemini-1.5-flash**: ~$1-2 USD
-- **200 comparisons with gemini-1.5-pro**: ~$3-4 USD
+### Prerequisites
+```bash
+pip install pandas matplotlib seaborn scipy numpy
+```
 
-**Processing time**: ~15-20 minutes (with rate limiting)
+### Run Equal Opportunity Analysis
+```bash
+cd analysis/equal_opportunity/
+python3 equal_opportunity_analysis.py
+```
 
-## 🎯 How It Works
+### Run Model Comparison
+```bash
+cd analysis/comparison/
+python3 create_comparison_figure.py
+```
 
-1. **Pairs resumes**: Matches US resume #1 with UK resume #1, US #2 with UK #2, etc.
-2. **Side-by-side comparison**: Presents both resumes to AI simultaneously
-3. **Hiring decision**: Asks AI to choose which candidate to hire
-4. **Bias analysis**: Analyzes whether there's a pattern in US vs UK preferences
+## Analysis Types
 
-## 📈 Expected Results
+### 1. Equal Opportunity Gap Analysis
+- Measures True Positive Rate (TPR) differences between US/UK candidates
+- Tests statistical significance using Fisher's Exact Test
+- Visualizes gaps with confidence intervals
+- Flags violations of 15% fairness threshold
 
-The system will show:
-- How many times AI chose US candidates
-- How many times AI chose UK candidates
-- Detailed reasoning for each decision
-- Potential bias patterns in hiring preferences
+### 2. Model Comparison Analysis
+- Side-by-side comparison of all three models
+- Grouped bar charts showing selection rates
+- Statistical significance indicators
+- Aggregate analysis across all models
 
-## 🔄 Model Comparison
+### 3. TPR Analysis
+- Detailed True Positive Rate analysis
+- Confusion matrix visualization
+- P-value plots with log scale
+- Combined heatmap analysis
 
-Compare results between different AI models:
-- **OpenAI GPT**: Industry standard, extensive training data
-- **Google Gemini**: Alternative perspective, potentially different biases 
+## Visualizations Generated
+
+### Figure 1: Grouped Bar Chart
+- TPR comparison for UK vs US candidates
+- Error bars showing 95% confidence intervals
+- Statistical significance markers (* p ≤ 0.05)
+- Fairness gap threshold line
+
+### Figure 2: TPR Gap Plot
+- Gap visualization with threshold overlay
+- Statistical significance indicators
+- Exact gap annotations
+
+### Figure 3: P-value Plot
+- Log-scale p-value visualization
+- Significance threshold highlighting
+- Model comparison of statistical evidence
+
+### Figure 4: Confusion Matrix
+- Detailed breakdown for selected model
+- True Positive/False Negative counts
+- Visual representation of selection patterns
+
+### Figure 5: Combined Heatmap
+- Cross-model and cross-group comparison
+- Color-coded selection rates
+- Comprehensive bias overview
+
+## Data Sources
+- **Resumes.csv**: Resume data for hiring simulations
+- **Corpora.csv**: Corpus data for analysis
+- **Results/**: Organized test results by model and trial
+
+## Statistical Methods
+- **Fisher's Exact Test**: For statistical significance
+- **Wilson Score Interval**: For confidence intervals
+- **Equal Opportunity Gap**: TPR difference measurement
+- **15% Threshold**: Fairness violation flag
+
+## Research Implications
+1. **Substantial Bias**: All tested models show significant bias
+2. **Model Variation**: Different models exhibit varying bias levels
+3. **Fairness Violations**: All models exceed established thresholds
+4. **Need for Mitigation**: Urgent need for bias reduction techniques
+
+## Future Work
+- Bias mitigation strategies
+- Additional model testing
+- Cross-cultural bias analysis
+- Fairness-aware model training
+
+## Contact
+For questions about this research, please refer to the project documentation in the `docs/` directory.
+
+## License
+This research project is for academic purposes. Please cite appropriately if using these findings. 
