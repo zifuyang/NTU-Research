@@ -23,7 +23,7 @@ def load_and_analyze_data():
     
     # Load Claude data (clean results)
     try:
-        claude_df = pd.read_csv('Results/Claude/claude_results_clean.csv')
+        claude_df = pd.read_csv('../../Results/Claude/claude_results_clean.csv')
         claude_verdicts = claude_df['verdict'].value_counts()
         claude_us_pct = (claude_verdicts.get('US', 0) / len(claude_df)) * 100
         claude_uk_pct = (claude_verdicts.get('UK', 0) / len(claude_df)) * 100
@@ -43,7 +43,7 @@ def load_and_analyze_data():
     
     # Load Gemini test 5 data
     try:
-        gemini_df = pd.read_csv('Results/Gemini/gemini_results_trial_new5.csv')
+        gemini_df = pd.read_csv('../../Results/Gemini/gemini_results_trial_new5.csv')
         gemini_verdicts = gemini_df['verdict'].value_counts()
         gemini_us_pct = (gemini_verdicts.get('US', 0) / len(gemini_df)) * 100
         gemini_uk_pct = (gemini_verdicts.get('UK', 0) / len(gemini_df)) * 100
@@ -63,7 +63,7 @@ def load_and_analyze_data():
     
     # Load OpenAI test 1 data
     try:
-        openai_df = pd.read_csv('Results/OpenAI/openai_results_trial1.csv')
+        openai_df = pd.read_csv('../../Results/OpenAI/openai_results_trial1.csv')
         openai_verdicts = openai_df['verdict'].value_counts()
         openai_us_pct = (openai_verdicts.get('US', 0) / len(openai_df)) * 100
         openai_uk_pct = (openai_verdicts.get('UK', 0) / len(openai_df)) * 100
@@ -180,11 +180,20 @@ def create_improved_grouped_bar_chart(results, p_values, ci_data):
                 fontsize=11, fontweight='bold', color='black',
                 bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor='darkgray', alpha=0.9))
     
-    # Add fairness gap threshold line (orange color, no label on plot)
-    # Calculate 15% of max TPR for fairness threshold
-    max_tpr = max(max(us_tprs), max(uk_tprs))
-    threshold_value = 0.15 * max_tpr
-    ax.axhline(y=threshold_value, color='orange', linestyle='--', alpha=0.8, linewidth=2)
+    # Add individual fairness gap threshold lines for each model
+    # Calculate 15% of max TPR for each model and draw separate line segments
+    for i, model in enumerate(models):
+        # Get the maximum of US and UK TPR for this specific model
+        model_max_tpr = max(us_tprs[i], uk_tprs[i])
+        threshold_value = 0.15 * model_max_tpr
+        
+        # Draw horizontal line segment over the corresponding bars only
+        bar_width = 0.35  # Width of each bar
+        x_start = i - bar_width - 0.05  # Start before the US bar
+        x_end = i + bar_width + 0.05    # End after the UK bar
+        
+        ax.plot([x_start, x_end], [threshold_value, threshold_value], 
+                color='orange', linestyle='--', alpha=0.8, linewidth=2)
     
     # Add sample size annotation
     ax.text(0.02, 0.98, f'n = {results[models[0]]["total"]} comparisons per model', 
@@ -206,14 +215,14 @@ def create_improved_grouped_bar_chart(results, p_values, ci_data):
     legend_elements = [
         mpatches.Patch(color='#2E86AB', label='US Candidates', alpha=0.8),
         mpatches.Patch(color='#A23B72', label='UK Candidates', alpha=0.8),
-        plt.Line2D([0], [0], color='orange', linestyle='--', label='Fairness Gap Threshold (15% of max TPR)'),
+        plt.Line2D([0], [0], color='orange', linestyle='--', label='Individual Fairness Threshold (15% of model max TPR)'),
         plt.Line2D([0], [0], marker='*', color='w', markerfacecolor='red', 
                    markersize=15, label='* p ≤ 0.05 (Fisher\'s Exact Test)')
     ]
     ax.legend(handles=legend_elements, loc='upper right', fontsize=11)
     
     # Add descriptive caption with emphasized terms
-    caption_text = ('TPRs for UK vs US candidates across three LLMs. Orange line denotes 15% fairness threshold.\n'
+    caption_text = ('TPRs for UK vs US candidates across three LLMs. Orange lines denote individual 15% fairness thresholds.\n'
                    '* indicates statistically significant TPR gaps (p ≤ 0.05). Δ shows the TPR gap (US - UK).')
     fig.text(0.5, 0.02, caption_text, ha='center', fontsize=11, style='italic', wrap=True)
     
