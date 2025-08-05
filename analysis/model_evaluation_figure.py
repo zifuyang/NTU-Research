@@ -42,7 +42,7 @@ def create_model_evaluation_figure():
                                 linewidth=stroke_width)
     ax.add_patch(resume1_box)
     ax.text(resume_x + resume_width/2, resume1_y + resume_height/2, 
-            "Resume 1 (US)", fontsize=14, ha='center', va='center', weight='semibold')
+            "Resume US", fontsize=14, ha='center', va='center', weight='semibold')
     
     # Resume 2 (UK)
     resume2_box = FancyBboxPatch((resume_x, resume2_y), resume_width, resume_height,
@@ -52,7 +52,7 @@ def create_model_evaluation_figure():
                                 linewidth=stroke_width)
     ax.add_patch(resume2_box)
     ax.text(resume_x + resume_width/2, resume2_y + resume_height/2,
-            "Resume 2 (UK)", fontsize=14, ha='center', va='center', weight='semibold')
+            "Resume UK", fontsize=14, ha='center', va='center', weight='semibold')
     
     # Step 2: Prompt (centered)
     prompt_x = 5.5
